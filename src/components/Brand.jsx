@@ -49,22 +49,32 @@ export function Rocket({ height = 220, body = "#ECEEF6", className }) {
   );
 }
 
-/** A deterministic sprinkle of small 8s (mostly faint, a few in brand colours). */
-export function EightShower({ count = 26, seed = 8, className, avoid = [0, 0, 0, 0] }) {
+/** Small 8s falling slowly like snow (mostly faint, a few in brand colours).
+ *  Negative delays spread them over the area from the first frame; with reduced motion they simply stand still. */
+export function EightShower({ count = 24, seed = 8, className, avoidX = [0, 0], colour = true }) {
   let s = seed;
   const rand = () => ((s = (s * 9301 + 49297) % 233280) / 233280);
-  const [ax0, ay0, ax1, ay1] = avoid;            // box to keep clear, in % of the shower area
+  const [ax0, ax1] = avoidX;                     // horizontal band to keep clear (e.g. the big 8), in % of the area
   const items = [];
-  for (let i = 0; items.length < count && i < count * 6; i++) {
-    const it = { x: rand() * 96, y: rand() * 94, h: 10 + rand() * 18, r: rand() * 50 - 25, colour: items.length % 7 === 3 };
-    if (it.x > ax0 && it.x < ax1 && it.y > ay0 && it.y < ay1) continue;
-    items.push(it);
+  for (let i = 0; items.length < count && i < count * 8; i++) {
+    const x = rand() * 94;
+    if (x > ax0 && x < ax1) continue;
+    const duration = 20 + rand() * 16;           // seconds per fall: a slow snowfall
+    items.push({
+      x, y: rand() * 96, h: 10 + rand() * 18, r: Math.round(rand() * 40 - 20),
+      sway: Math.round(rand() * 40 - 20), duration, delay: -rand() * duration,
+      colour: colour && items.length % 7 === 3,
+    });
   }
   return (
     <div className={`shower ${className ?? ""}`} aria-hidden="true">
       {items.map((it, i) => (
-        <Mark8 key={i} height={it.h} top={it.colour ? "#FF5A36" : "#D9D5CB"} bottom={it.colour ? "#161A3A" : "#D9D5CB"}
-          style={{ position: "absolute", left: `${it.x}%`, top: `${it.y}%`, transform: `rotate(${it.r}deg)` }} />
+        <span key={i} className="shower__item" style={{
+          left: `${it.x}%`, "--y": `${it.y}%`, "--r0": `${it.r}deg`, "--sway": `${it.sway}px`,
+          animationDuration: `${it.duration.toFixed(1)}s`, animationDelay: `${it.delay.toFixed(1)}s`,
+        }}>
+          <Mark8 height={it.h} top={it.colour ? "#FF5A36" : "#D9D5CB"} bottom={it.colour ? "#161A3A" : "#D9D5CB"} />
+        </span>
       ))}
     </div>
   );

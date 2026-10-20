@@ -4,7 +4,8 @@ import { Lockup, Mark8, EightShower } from "../components/Brand.jsx";
 export default function Hero() {
   return (
     <section className="hero" id="top">
-      <EightShower className="hero__shower" count={22} avoid={[12, 18, 66, 84]} />
+      <EightShower className="hero__shower" count={22} avoidX={[14, 64]} />
+      <EightShower className="hero__shower--phone" count={12} seed={18} colour={false} />
       <div className="container hero__inner">
         <div className="hero__text">
           <Lockup />
