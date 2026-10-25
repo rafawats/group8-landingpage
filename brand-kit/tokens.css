@@ -1,0 +1,67 @@
+/* Group 8 brand tokens — drop into the project and import before your own styles.
+   Fonts (add to <head>):
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=Sora:wght@500;800&display=swap">
+*/
+:root {
+  /* Core colours */
+  --g8-navy: #161A3A;        /* "Midnight": headings, body text on light, dark sections, the 8's big ring */
+  --g8-signal: #FF5A36;      /* brand orange: the 8's small ring, shapes, bars, icons, accents. Not for small text on Linen (2.8:1) */
+  --g8-ember: #C93A18;       /* deep orange: kickers, orange TEXT on light backgrounds (4.6:1 on Linen) */
+  --g8-slate: #5A6080;       /* secondary text, labels, captions (5.5:1 on Linen) */
+  --g8-sub: #4A5070;         /* body copy in cards and paragraphs (7:1 on Linen) */
+  --g8-linen: #F5F2EA;       /* default page background */
+  --g8-white: #FFFFFF;       /* cards on Linen */
+  --g8-mist: #ECEEF6;        /* the 8's big ring on dark backgrounds; light tints */
+  --g8-muted-on-dark: #AEB3D1; /* secondary text on Midnight */
+  --g8-line: #D9D5CB;        /* hairlines, dividers, grey falling 8s */
+  --g8-faint-8: #E5E2DB;     /* big decorative background 8 on Linen */
+  --g8-x: #7E85A6;           /* the "×" in the Group 8 × Auramax lockup */
+
+  /* Roadmap phases (always in this order) */
+  --phase-stabilise: #C93A18;   /* Days 0–30 */
+  --phase-foundations: #FF5A36; /* Days 30–90 */
+  --phase-build: #5A6080;       /* Months 3–12 */
+  --phase-scale: #161A3A;       /* Months 12–18 */
+
+  /* Client brand — only inside the Auramax logo / wordmark */
+  --aura-green: #1E4D3B;
+  --aura-gold: #C77D12;
+  --aura-gold-on-dark: #F2B04A;
+
+  /* Type */
+  --font-head: 'Space Grotesk', system-ui, sans-serif;  /* 700 for titles, 500 rarely */
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;  /* 400 body, 600 kickers/labels */
+  --font-aura: 'Sora', system-ui, sans-serif;           /* 800, ONLY for the AURAMAX wordmark */
+
+  /* Shape */
+  --radius-card: 14px;
+  --radius-tile: 20px;       /* icon tiles, QR card (18–20px) */
+  --radius-chip: 9px;
+  --content-max: 1120px;     /* slides use 80px side margins on a 1280px canvas */
+}
+
+/* Recurring text styles from the deck */
+.g8-kicker { font: 600 13px/1.2 var(--font-body); letter-spacing: 3px; text-transform: uppercase; color: var(--g8-ember); }
+.g8-label  { font: 600 12px/1.2 var(--font-body); letter-spacing: 2px; text-transform: uppercase; color: var(--g8-slate); }
+.g8-h1     { font: 700 44px/1.05 var(--font-head); letter-spacing: -1.2px; color: var(--g8-navy); }
+.g8-display{ font: 700 50px/1.05 var(--font-head); letter-spacing: -1.4px; color: var(--g8-navy); }
+.g8-stat   { font: 700 40px/1 var(--font-head); letter-spacing: -1px; color: var(--g8-navy); }
+.g8-body   { font: 400 17px/1.5 var(--font-body); color: var(--g8-sub); }
+.g8-card   { background: var(--g8-white); border-radius: var(--radius-card); padding: 20px 22px; }
+.g8-callout{ background: var(--g8-navy); color: #fff; border-radius: var(--radius-card); padding: 20px 28px; }
+
+/* Falling 8s (hero background). Each item is a small Group 8 mark, mostly --g8-line grey, ~1 in 7 in brand colours.
+   Set per item: left %, --y (resting %), --r0 (start rotation, ±20deg), --sway (±20px),
+   animation-duration 20–36s, negative animation-delay so they are spread out from the first frame. */
+.shower { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.shower__item { position: absolute; top: -8%; display: block; animation: eight-fall linear infinite; will-change: top, transform; }
+@keyframes eight-fall {
+  0%   { top: -8%;  transform: translateX(0) rotate(var(--r0)); }
+  50%  { transform: translateX(var(--sway)) rotate(calc(var(--r0) + 25deg)); }
+  100% { top: 104%; transform: translateX(0) rotate(calc(var(--r0) + 50deg)); } /* max +50deg so an 8 never turns into ∞ */
+}
+@media (prefers-reduced-motion: reduce) {
+  .shower__item { animation: none; top: var(--y); transform: rotate(var(--r0)); }
+}
