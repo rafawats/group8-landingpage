@@ -7,6 +7,7 @@ const CHAIN = [
   ["#top", "#problem"],
   ["#problem .story__stage", "#solution"],
   ["#solution .build-stage", "#recommendations"],
+  ["#solution .mstage", "#recommendations"],          // the phone version of the proposal
   ["#recommendations .deck__stage", "#roadmap"],
   ["#roadmap .roadmap-stage", "#team"],
   ["#team .team-stage", "#launch", 0.45],   // straight into full space: past the navy takeover and stars

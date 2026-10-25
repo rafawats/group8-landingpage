@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { mesh } from "../content.js";
+import useMedia, { MOBILE } from "../useMedia.js";
 
 // The build is pinned under the nav and driven by the scroll: each step takes SEG screen heights of scrolling,
 // then HOLD more with the finished diagram before it moves on. The whole diagram is scaled to fit the space under
@@ -84,9 +85,81 @@ function measureFlights(root) {
   return fly;
 }
 
+/** Phones: instead of the diagram, one card per part of it explaining what happens there. Solid items are
+ *  centrally controlled, dashed ones regionally, as in the diagram. Like the Recommendations deck, the section pins
+ *  and each card slides up onto the stack over M_SEG screen heights of scrolling (the ones below sink back a
+ *  little); the card on top gets the navy sweep. M_HOLD more before it moves on. */
+const M_SEG = 0.85, M_HOLD = 1;
+function MobileMesh() {
+  const pin = useRef(null), stage = useRef(null), area = useRef(null), list = useRef(null);
+  useEffect(() => {
+    let raf = 0;
+    const N = mesh.steps.length;
+    const update = () => {
+      raf = 0;
+      const vh = window.innerHeight, run = M_SEG * vh, areaH = area.current.clientHeight;
+      pin.current.style.height = `${stage.current.offsetHeight + (N - 1 + M_HOLD) * run}px`;
+      // The first card is already there when the section pins; each next one arrives over one beat.
+      const p = (NAV - pin.current.getBoundingClientRect().top) / run;
+      [...list.current.children].forEach((el, i) => {
+        const a = i === 0 ? 1 : Math.min(1, Math.max(0, p - (i - 1)));
+        const e = 1 - (1 - a) ** 3;
+        let depth = 0;
+        for (let j = i + 1; j < N; j++) depth += Math.min(1, Math.max(0, p - (j - 1)));
+        el.style.transform = `translateY(${((1 - e) * (areaH + 40)).toFixed(1)}px) scale(${(1 - depth * 0.04).toFixed(3)})`;
+        el.style.setProperty("--depth", Math.min(depth, 3).toFixed(3));
+        el.classList.toggle("is-active", a >= 0.98 && depth < 0.5 && p > -0.6);
+      });
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); cancelAnimationFrame(raf); };
+  }, []);
+  const [corp, regional] = mesh.councils;
+  const item = (kind, name, text, extra) => (
+    <li key={name} className={`mcard__item mcard__item--${kind}`}><strong>{name}</strong>{text && <span>{text}</span>}{extra}</li>
+  );
+  const bodies = [
+    <ul className="mcard__list">{item("central", corp.name, corp.text)}{item("regional", regional.name, regional.text)}</ul>,
+    <ul className="mcard__list">{mesh.products.map((c) => item("central", c.name, c.text))}</ul>,
+    <ul className="mcard__list">{mesh.assets.map((c) => item("regional", c.name, c.text, c.feeds && <em>↗ feeds Sales History</em>))}</ul>,
+    <ul className="catalog__list mcard__chips">
+      {ENTRIES.map((e) => <li key={e.name} className={`catalog__entry catalog__entry--${e.kind}`}>{e.name}<small>{mesh.owners[e.kind]}</small></li>)}
+    </ul>,
+    <ul className="mcard__list">
+      <li className="mcard__item mcard__item--planassist"><strong>PlanAssist</strong><span>{mesh.planassist}</span></li>
+      <li className="mcard__item mcard__item--future"><strong>{mesh.future.name}</strong>
+        {mesh.future.options.map((o) => <span key={o.name}>→ <b>{o.name}</b> {o.text}</span>)}</li>
+    </ul>,
+  ];
+  return (
+    <div className="mpin" ref={pin}>
+      <div className="mstage" ref={stage}>
+        <p className="kicker">Our proposal</p>
+        <h2 id="solution-title">A Hybrid Data Mesh</h2>
+        <p className="lead">{mesh.intro}</p>
+        <div className="mcards__area" ref={area}>
+          <ol className="mcards" ref={list}>
+            {mesh.steps.map((st, i) => (
+              <li key={st.label} className="mcard" style={{ "--i": i, zIndex: i, top: `${i * 10}px`, maxHeight: `calc(100% - ${i * 10}px)` }}>
+                <p className="mcard__step"><b>{i + 1}</b>{st.label}</p>
+                <p className="mcard__text">{st.text}</p>
+                {bodies[i]}
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Solution() {
   const [corp, regional] = mesh.councils;
   const reduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const mobile = useMedia(MOBILE);   // phones get explanation cards instead of the pinned diagram
   const [step, setStep] = useState(reduced ? LAST : -1);
   const [links, setLinks] = useState([]);
   const [fly, setFly] = useState({});
@@ -95,7 +168,7 @@ export default function Solution() {
 
   // Scroll drives the step, the camera and the fill on the current step's pill.
   useEffect(() => {
-    if (reduced) return;
+    if (reduced || mobile) return;
     let raf = 0, last = 0, X = 0;
     const vh = () => window.innerHeight;
     const fit = () => {
@@ -128,17 +201,18 @@ export default function Solution() {
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
     return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onResize); cancelAnimationFrame(raf); };
-  }, [reduced]);
+  }, [reduced, mobile]);
 
   useLayoutEffect(() => {
     const el = root.current;
+    if (!el) return;
     const measure = () => { setSize({ w: el.offsetWidth, h: el.offsetHeight }); setLinks(measureLinks(el)); setFly(measureFlights(el)); };
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     document.fonts?.ready.then(measure);
     return () => ro.disconnect();
-  }, []);
+  }, [mobile]);
 
   // Clicking a step scrolls to the start of it (or just shows it, when nothing is pinned).
   const goTo = (i) => {
@@ -147,6 +221,16 @@ export default function Solution() {
     window.scrollTo({ top, behavior: "smooth" });
   };
   const current = mesh.steps[Math.max(step, 0)];
+
+  if (mobile) {
+    return (
+      <section className="section" id="solution" aria-labelledby="solution-title">
+        <div className="container">
+          <MobileMesh />
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="section" id="solution" aria-labelledby="solution-title">

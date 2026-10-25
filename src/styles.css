@@ -211,6 +211,14 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .lockup--large .lockup__aura { font-size: 26px; }
 .lockup--large .lockup__g8 { gap: 12px; }
 .lockup--large .lockup__aura { gap: 10px; }
+/* Phones: the large lockup shrinks a little and stays on one line (Auramax no longer wraps under Group 8). */
+@media (max-width: 700px) {
+  .lockup--large { flex-wrap: nowrap; gap: 8px; }
+  .lockup--large svg { height: clamp(18px, 6vw, 26px); width: auto; }
+  .lockup--large .lockup__g8, .lockup--large .lockup__x { font-size: clamp(16px, 5.4vw, 22px); }
+  .lockup--large .lockup__aura { font-size: clamp(15px, 5vw, 20px); }
+  .lockup--large .lockup__g8, .lockup--large .lockup__aura { gap: 6px; white-space: nowrap; }
+}
 
 /* Sections */
 .section { padding: 72px 0; }
@@ -320,6 +328,17 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .swing-card p:not(.swing-card__when) { color: var(--muted-on-dark); }
 .swing-card p + p:not(.swing-card__when) { margin-top: 8px; }
 .story__step .swing-card { background: #1E2347; }
+.story__quote-mobile { display: none; }
+/* Phones: no axis diagram and nothing pinned — the header, then the timeline, then the takeaway. */
+@media (max-width: 700px) {
+  .story__stage { position: static; box-shadow: none; clip-path: none; }
+  .story__stage::after, .story__stage .axis, .story__stage .story__quote { display: none; }
+  .story__steps { padding-top: 32px; }
+  .story__step, .story__step:last-child { min-height: 0; padding: 14px 0; align-items: center; }
+  .story__step:last-child .story__item { position: static; }
+  .story__takeaway { display: none; }
+  .story__quote-mobile { display: block; margin: 24px 0 0 64px; font-size: 21px; }
+}
 .story__takeaway { height: 90vh; } /* scrolling room while the quote holds under the diagram */
 .takeaway.story__quote { max-height: 0; overflow: hidden; margin: 0; font-size: clamp(22px, 2.8vw, 30px); opacity: 0; transform: translateY(16px); transition: max-height .9s cubic-bezier(.22, .61, .36, 1), margin .9s cubic-bezier(.22, .61, .36, 1), opacity .9s ease .15s, transform 1s cubic-bezier(.22, .61, .36, 1) .15s; }
 .takeaway.story__quote.is-in { max-height: 260px; margin-top: 20px; opacity: 1; transform: none; }
@@ -485,6 +504,38 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .rec h3 { margin-bottom: 8px; }
 .rec p { color: var(--sub); font-size: 16px; }
 
+/* Proposal on phones: pinned like the Recommendations deck. The header sits on top; each card slides up onto the
+   stack with the scroll (JS sets its transform), the ones below sink back, and the card on top turns navy. */
+.mstage { position: sticky; top: 64px; height: calc(100vh - 64px); height: calc(100svh - 64px); display: flex; flex-direction: column; padding-top: 12px; }
+.mstage h2 { font-size: 28px; }
+.mstage .lead { font-size: 15px; margin-top: 6px; }
+.mcards__area { position: relative; flex: 1; min-height: 0; margin-top: 16px; overflow: hidden; }
+.mcards { position: relative; height: 100%; }
+.mcard { position: absolute; left: 0; right: 0; top: 0; max-height: 100%; overflow: hidden; isolation: isolate; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; display: grid; gap: 10px; align-content: start; transform-origin: 50% 0; filter: brightness(calc(1 - var(--depth, 0) * .06)); will-change: transform; }
+.mcard::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--navy); clip-path: circle(0% at 32px 32px); transition: clip-path .9s cubic-bezier(.65, 0, .35, 1); }
+.mcard.is-active::before { clip-path: circle(150% at 32px 32px); }
+.mcard__step, .mcard__text { transition: color .6s ease .15s; }
+.mcard.is-active .mcard__step { color: #fff; }
+.mcard.is-active .mcard__text { color: var(--muted-on-dark); }
+.mcard__step b { transition: background .5s ease, color .5s ease; }
+.mcard.is-active .mcard__step b { background: var(--signal); color: var(--navy); }
+.mcard__step { display: flex; align-items: center; gap: 10px; font-family: var(--head); font-weight: 700; font-size: 19px; }
+.mcard__step b { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--navy); color: #fff; font-size: 14px; }
+.mcard__text { color: var(--sub); font-size: 15px; line-height: 1.5; }
+.mcard__list { display: grid; gap: 8px; }
+.mcard__item { display: grid; gap: 2px; padding: 10px 12px; border-radius: 10px; font-size: 14px; }
+.mcard__item strong { font-family: var(--head); font-size: 16px; }
+.mcard__item span { color: var(--sub); }
+.mcard__item em { font-style: normal; font-weight: 600; font-size: 13px; color: var(--ember); }
+.mcard__item--central { background: var(--central); border: 1.5px solid var(--navy); }
+.mcard__item--regional { background: var(--regional-card); border: 1.5px dashed var(--navy); }
+.mcard__item--planassist { background: var(--signal); }
+.mcard__item--planassist span { color: var(--navy); }
+.mcard__item--future { background: var(--card); border: 2px solid var(--navy); }
+.mcard__item--future b { font-family: var(--head); color: var(--navy); }
+.mcard__chips { justify-content: flex-start; margin-top: 2px; }
+@media (prefers-reduced-motion: reduce) { .mcard::before, .mcard__step, .mcard__text, .mcard__step b { transition: none; } }
+
 /* Recommendations: a pinned stage. Cards land one by one on a deck; a card is white while it rises and its navy
    or orange fill sweeps out from the number as it settles. Then the deck spreads into a row of all five.
    JS sets each card's box and --m (0 = deck, 1 = row) from the scroll position; sizes below follow --m. */
@@ -562,6 +613,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .phase > p:not(.phase__head) { color: var(--sub); font-size: 16px; }
 .phase__done { border-top: 1px solid var(--line); padding-top: 8px; }
 .phase__done b { color: var(--navy); }
+
+/* Roadmap on phones: just the phases strip (colour sweep, rocket); the phase explanations are left out. */
+@media (max-width: 700px) { .roadmap-draw .phases { display: none; } }
 
 /* Roadmap title types itself out: the invisible full title holds the space, the typed copy sits on top. */
 /* Roadmap pin: while the section fits on screen it sticks under the nav until the rocket has launched. */

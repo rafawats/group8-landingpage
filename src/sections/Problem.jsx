@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import useMedia, { MOBILE } from "../useMedia.js";
 import { diagnosis as d } from "../content.js";
 import { AuramaxMark, Mark8 } from "../components/Brand.jsx";
 
@@ -87,6 +88,7 @@ const NAV = 64;
 export default function Problem() {
   const [step, setStep] = useState(-1);   // -1: the story hasn't started (the intro is still folding away)
   const steps = useRef(null);
+  const mobile = useMedia(MOBILE);   // phones: no axis diagram, just the timeline (see the mobile CSS)
 
   // A reading line below the pinned header and axis drives the story: the timeline rail fills down to it,
   // every point it has reached lights up, and the last point reached sets the diagram's step.
@@ -107,15 +109,17 @@ export default function Problem() {
       // Once the header is pinned, the intro sentence fades and folds away over the first quarter-screen of
       // scrolling, so the axis sits right under the title.
       const story = ol.parentElement, lead = story.querySelector(".story__lead");
-      const k = Math.min(1, Math.max(0, (NAV - story.getBoundingClientRect().top) / (0.25 * window.innerHeight)));
-      lead.style.height = `${(leadFull * (1 - k)).toFixed(1)}px`;
-      lead.style.opacity = (1 - Math.min(1, k * 1.6)).toFixed(3);
-      lead.style.marginTop = `${(10 * (1 - k)).toFixed(1)}px`;
+      // On phones nothing is pinned, so the intro simply stays and the timeline is live straight away.
+      const k = mobile ? 1 : Math.min(1, Math.max(0, (NAV - story.getBoundingClientRect().top) / (0.25 * window.innerHeight)));
+      lead.style.height = mobile ? "" : `${(leadFull * (1 - k)).toFixed(1)}px`;
+      lead.style.opacity = mobile ? "" : (1 - Math.min(1, k * 1.6)).toFixed(3);
+      lead.style.marginTop = mobile ? "" : `${(10 * (1 - k)).toFixed(1)}px`;
       story.querySelector(".story__stage").style.setProperty("--fold", k.toFixed(3));   // tightens the pinned header too
       // The reading line sits in the free space under the pinned header, far enough down that a card lights up
       // while it is fully in view rather than tucked against the diagram.
       const vh = window.innerHeight, stageBottom = ol.parentElement.querySelector(".story__stage").getBoundingClientRect().bottom;
-      const line = Math.min(vh * 0.85, stageBottom + Math.max(150, (vh - stageBottom) * 0.42));
+      // On phones the header isn't pinned (it scrolls away), so the line simply sits 60% down the screen.
+      const line = mobile ? vh * 0.6 : Math.min(vh * 0.85, Math.max(vh * 0.45, stageBottom + Math.max(150, (vh - stageBottom) * 0.42)));
       const nodes = [...ol.querySelectorAll(".story__node")].map((n) => { const r = n.getBoundingClientRect(); return r.top + r.height / 2; });
       const first = nodes[0], lastY = nodes[nodes.length - 1];
       ol.style.setProperty("--rail-top", `${first - top}px`);
@@ -153,7 +157,7 @@ export default function Problem() {
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
     return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onResize); cancelAnimationFrame(raf); };
-  }, []);
+  }, [mobile]);
 
   return (
     <section className="section section--dark" id="problem" aria-labelledby="problem-title">
@@ -188,6 +192,8 @@ export default function Problem() {
           </ol>
           {/* Scrolling room for the takeaway: while this passes, the quote shows under the pinned diagram. */}
           <div className="story__takeaway" aria-hidden="true" />
+          {/* Phones: the takeaway simply follows the timeline. */}
+          <blockquote className="takeaway story__quote-mobile">{d.takeaway}</blockquote>
         </div>
       </div>
     </section>
