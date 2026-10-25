@@ -7,8 +7,10 @@ import Roadmap from "./sections/Roadmap.jsx";
 import Team from "./sections/Team.jsx";
 import Launch from "./sections/Launch.jsx";
 import Footer from "./sections/Footer.jsx";
+import useSectionGlide from "./useSectionGlide.js";
 
 export default function App() {
+  useSectionGlide();   // when a section's scroll story ends, glide on to the next section
   return (
     <>
       <a className="skip" href="#problem">Skip to content</a>

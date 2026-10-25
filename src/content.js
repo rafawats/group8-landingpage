@@ -11,8 +11,11 @@ export const project = {
 export const diagnosis = {
   claim: "AFG has not adopted a data governance strategy that fits its business model and balances innovation with control.",
   loose: { title: "Too loose", when: "2022–2026", text: "Each region set its own initiatives and data quality priorities, and every acquisition added more variation: silos and fragmented data." },
-  swing: { title: "PlanAssist", text: "A GenAI planning tool built on weak data, tested in one “successful” region and then rolled out globally." },
+  swing: { title: "PlanAssist", text: "A GenAI planning tool built on weak data, tested in one “successful” region and then rolled out globally.",
+    effect: "It overestimated demand in three countries, causing overproduction and waste." },
   strict: { title: "Too strict", when: "After PlanAssist", text: "Strict central controls were imposed. Delivery slowed and regions worked around them." },
+  missing: { when: "What was missing", title: "The middle ground", text: "Neither extreme fits a federated company. AFG needs central rules where data is shared, and regional freedom where it isn’t." },
+  balance: { title: "Hybrid Data Mesh", text: "The balance point we propose" },
   takeaway: "Without a governance model that fits its federated structure, any digital initiative at AFG will inherit the same inconsistencies.",
 };
 
@@ -34,7 +37,23 @@ export const mesh = {
     { name: "Customer & Locations", text: "global customer ID", feeds: true },
   ],
   catalog: "Every data product and asset, and who owns it",
+  owners: { product: "Central", asset: "Regional" },
   planassist: "Uses governed data products only",
+  future: {
+    name: "Future initiatives",
+    options: [
+      { name: "Data products", text: "when the data is shared across regions" },
+      { name: "Local innovation", text: "kept under the Regional Councils’ priorities" },
+    ],
+  },
+  // The diagram builds in these steps; each caption shows while its step plays.
+  steps: [
+    { label: "Councils", text: "Two tiers of decision rights: a Corporate Data Council for global standards and contracts, and Regional Councils for local priorities." },
+    { label: "Data products", text: "Three data products are owned and certified centrally, because every region depends on them." },
+    { label: "Regional assets", text: "Everything else stays with the regions. Sales & Invoicing and Customer & Locations follow a shared template and a global customer ID, so they feed Sales History." },
+    { label: "Data catalog", text: "Every data product and asset is listed in one data catalog, with who owns it." },
+    { label: "Consumers", text: "PlanAssist uses governed data products only. Future initiatives either build on data products or stay as innovations under local priorities." },
+  ],
 };
 
 export const recommendations = [
@@ -44,6 +63,9 @@ export const recommendations = [
   { title: "One central data catalog", text: "Every data product, asset and dataset, with its owner, definitions, quality status and how it can be used." },
   { title: "PlanAssist on governed data only", text: "PlanAssist consumes only governed data products, with human review of promotion decisions until the data is trusted." },
 ];
+
+// Shown above all five moves once the card stack has been scrolled through.
+export const recommendationsFinale = "Five moves, one Hybrid Data Mesh";
 
 export const roadmap = [
   { phase: "Stabilise", when: "Days 0–30", color: "ember",
@@ -60,13 +82,17 @@ export const roadmap = [
     done: "Promotion ROI up vs. baseline; ≥90% of data assets catalogued." },
 ];
 
-// Replace "[Role in the project]" with each person's role, or delete a photo file to show initials instead.
+// Add a role to show it under a name (leave it empty to hide it), or delete a photo file to show initials instead.
 export const team = [
-  { name: "Rafael Watson Gonzalez", role: "[Role in the project]", photo: "team/rafael.jpg" },
-  { name: "Rhea Sachdeva", role: "[Role in the project]", photo: "team/rhea.jpg" },
-  { name: "Wenjie Yi", role: "[Role in the project]", photo: "team/wenjie.jpg" },
-  { name: "Ignacio Gorris Corrales", role: "[Role in the project]", photo: "team/ignacio.jpg" },
+  { name: "Rafael Watson Gonzalez", role: "", photo: "team/rafael.jpg", linkedin: "https://www.linkedin.com/in/rafael-watson/" },
+  { name: "Rhea Sachdeva", role: "", photo: "team/rhea.jpg", linkedin: "https://www.linkedin.com/in/rhea-sachdeva-6a76b5215/" },
+  { name: "Wenjie Yi", role: "", photo: "team/wenjie.jpg", linkedin: "https://www.linkedin.com/in/wenjieyi/" },
+  { name: "Ignacio Gorris Corrales", role: "", photo: "team/ignacio.jpg", linkedin: "https://www.linkedin.com/in/ignacio-gorris-corrales/" },
 ];
+// The team title, drawn as "From 8 to ∞" (label is what screen readers hear).
+export const teamTitle = { label: "From 8 to infinity", from: "From", to: "to" };
+// The hint under the team title, for mouse and for touch screens.
+export const teamHint = { hover: "Hover over one of us to say hi on LinkedIn", touch: "Tap one of us to say hi on LinkedIn" };
 
 // Put the files in public/downloads/ (or paste full links) and they become live buttons.
 // Leave href empty to hide a button.
@@ -75,3 +101,10 @@ export const resources = [
   { label: "Presentation slides", note: "PDF", href: "" },
   { label: "Project repository", note: "GitHub", href: "" },
 ];
+
+// The animated 8 in the hero: the small ring is innovation, the big ring is control, together they make the mark.
+export const balance = {
+  innovation: { name: "Innovation", text: "Regional freedom to set local priorities.", alone: "On its own: silos and fragmented data." },
+  control: { name: "Control", text: "Central standards and data contracts.", alone: "On its own: slow delivery and workarounds." },
+  solution: { kicker: "Innovation + control", name: "Hybrid Data Mesh", text: "Central control where data is shared, regional freedom where it isn’t." },
+};
