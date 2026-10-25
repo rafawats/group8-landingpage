@@ -31,6 +31,10 @@ export default function BalanceEight({ scrub = false }) {
         <div className="balance__stage">
           <svg viewBox="0 0 600 460" className="balance__svg" aria-hidden="true">
             <defs>
+              {/* A wide soft blur for the glow that blooms behind the 8 as it forms. */}
+              <filter id="balance-glow" filterUnits="userSpaceOnUse" x="-250" y="-250" width="1100" height="960">
+                <feGaussianBlur stdDeviation="34" />
+              </filter>
               <filter id="balance-goo" filterUnits="userSpaceOnUse" x="-50" y="-50" width="700" height="560">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="9" />
                 <feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" />
@@ -43,6 +47,10 @@ export default function BalanceEight({ scrub = false }) {
                 <circle key={i} className="balance__drop" cx="300" cy="218" r="13" fill={fill}
                   style={{ "--dx": `${dx}px`, "--dy": `${dy}px`, "--dx2": `${dx2}px`, "--dy2": `${dy2}px`, "--d0": `${i * 0.08}s`, animationDelay: `${i * 0.08}s` }} />
               ))}
+            </g>
+            <g className="balance__glow" filter="url(#balance-glow)">
+              <circle cx="300" cy="296" r="90" />
+              <circle cx="300" cy="140" r="66" />
             </g>
             <g className="balance__crisp">
               <circle cx="300" cy="296" r="90" stroke="#161A3A" />

@@ -24,12 +24,13 @@ export function AuramaxMark({ size = 24, dark = false, title }) {
 }
 
 /** "Group 8 × AURAMAX" partnership lockup. */
-export function Lockup({ dark = false }) {
+export function Lockup({ dark = false, large = false }) {
+  const mark = large ? 34 : 26;
   return (
-    <div className={`lockup ${dark ? "lockup--dark" : ""}`} role="img" aria-label="Group 8 and Auramax Foods Group">
-      <span className="lockup__g8"><Mark8 height={26} bottom={dark ? "#ECEEF6" : "#161A3A"} />Group 8</span>
+    <div className={`lockup ${dark ? "lockup--dark" : ""} ${large ? "lockup--large" : ""}`} role="img" aria-label="Group 8 and Auramax Foods Group">
+      <span className="lockup__g8"><Mark8 height={mark} bottom={dark ? "#ECEEF6" : "#161A3A"} />Group 8</span>
       <span className="lockup__x" aria-hidden="true">×</span>
-      <span className="lockup__aura"><AuramaxMark size={26} dark={dark} /><span>AURA<b>MAX</b></span></span>
+      <span className="lockup__aura"><AuramaxMark size={mark} dark={dark} /><span>AURA<b>MAX</b></span></span>
     </div>
   );
 }

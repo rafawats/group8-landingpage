@@ -62,19 +62,13 @@ export default function Hero() {
   return (
     <div className="hero-pin" ref={pin}>
       <section className={`hero ${reduced ? "" : "is-pinned"}`} id="top" ref={hero}>
-        <EightShower className="hero__shower" count={22} avoidX={[14, 64]} />
+        <EightShower className="hero__shower" count={30} avoidX={[24, 72]} />   {/* both sides, clear of the centred 8 */}
         <EightShower className="hero__shower--phone" count={12} seed={18} colour={false} />
         <div className="container hero__inner">
           <div className="hero__text">
-            <Lockup />
+            {/* Kept deliberately short: the logos, the title, and the innovation-and-control 8. */}
+            <Lockup large />
             <h1>{project.title}</h1>
-            <p className="hero__subtitle">{project.subtitle}</p>
-            <p className="lead">{project.lead}</p>
-            <div className="hero__ctas">
-              <a className="btn btn--primary" href="#solution">See the solution</a>
-              <a className="btn btn--ghost" href="#team">Meet the team</a>
-            </div>
-            <p className="hero__meta">{project.course} · {project.school}</p>
           </div>
           <div className="hero__art">
             <BalanceEight scrub={!reduced} />

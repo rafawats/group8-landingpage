@@ -83,19 +83,17 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 
 /* Hero */
 .hero { position: relative; overflow: hidden; padding: 40px 0 64px; }
-.hero__inner { position: relative; display: grid; gap: 32px; align-items: center; }
-.hero h1 { font-size: clamp(42px, 8vw, 80px); margin-top: 28px; max-width: 12ch; }
-.hero__subtitle { font-family: var(--head); font-weight: 500; font-size: clamp(20px, 3vw, 26px); color: var(--ember); margin-top: 14px; }
-.hero__ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
-.hero__meta { margin-top: 28px; font-size: 14px; color: var(--slate); }
-.hero__art { justify-self: center; width: 100%; max-width: 480px; }
-.hero__shower { position: absolute; inset: 0 0 0 55%; opacity: .9; }
+/* Hero: everything centred and stacked — logos, then the title, then the innovation-and-control 8. */
+.hero__inner { position: relative; display: grid; gap: 22px; justify-items: center; text-align: center; }
+.hero__text { display: grid; justify-items: center; }
+.hero h1 { font-size: clamp(26px, 3.6vw, 40px); margin-top: 18px; }
+.hero__art { justify-self: center; width: 100%; max-width: 560px; text-align: left; }
+.hero__shower { position: absolute; inset: 0; opacity: .9; }
 .hero__shower--phone { position: absolute; inset: 0 0 0 58%; opacity: .55; display: none; }
 @media (max-width: 899px) { .hero__shower { display: none; } .hero__shower--phone { display: block; } }
 .hero__inner { z-index: 1; }
 @media (min-width: 900px) {
   .hero { padding: 72px 0 96px; }
-  .hero__inner { grid-template-columns: 1.35fr 1fr; }
 }
 .shower { pointer-events: none; overflow: hidden; }
 .shower__item { position: absolute; top: -8%; display: block; animation: eight-fall linear infinite; will-change: top, transform; }
@@ -117,6 +115,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .balance__drop { opacity: 0; transform-box: fill-box; transform-origin: center; animation: balance-drop 8s ease-in-out both; }
 .balance__goo { animation: balance-goo-out 8s linear both; }
 .balance__crisp { fill: none; stroke-width: 36; animation: balance-crisp-in 8s linear both; }
+/* As the rings lock into the 8, a warm glow blooms out behind it, peaks, and settles into a soft steady glow. */
+.balance__glow { fill: none; stroke: var(--signal); stroke-width: 90; opacity: 0; transform-box: fill-box; transform-origin: center; animation: balance-glow 8s ease-out both; }
+@keyframes balance-glow { 0%, 86% { opacity: 0; transform: scale(.96); } 92% { opacity: .85; transform: scale(1.35); } 100% { opacity: .45; transform: scale(1.18); } }
 .balance__ring--innovation { stroke: var(--signal); animation-name: ring-innovation; }
 .balance__ring--control { stroke: var(--navy); animation-name: ring-control; }
 .balance__spark { fill: none; stroke: var(--signal); stroke-width: 6; opacity: 0; transform-box: fill-box; transform-origin: center; animation: balance-spark 1.1s ease-out 7.2s forwards; }
@@ -176,7 +177,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 /* Scroll-played: every part of the 8s story is held paused and set to the moment --t × 8s (minus its own start
    delay --d0), so the Hero's scroll progress plays it forwards and backwards. The idle float is off. */
 .balance.is-scrub .balance__ring, .balance.is-scrub .balance__drop, .balance.is-scrub .balance__goo,
-.balance.is-scrub .balance__crisp, .balance.is-scrub .balance__spark, .balance.is-scrub .balance__label,
+.balance.is-scrub .balance__crisp, .balance.is-scrub .balance__glow, .balance.is-scrub .balance__spark, .balance.is-scrub .balance__label,
 .balance.is-scrub .balance__solution { animation-play-state: paused; animation-delay: calc(var(--d0, 0s) - var(--t, 0) * 8s) !important; }
 .balance.is-scrub .balance__label--innovation { --d0: .5s; }
 .balance.is-scrub .balance__label--control { --d0: 1.6s; }
@@ -189,14 +190,14 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 @media (min-width: 900px) {
   .hero.is-pinned { min-height: calc(100vh - 64px); min-height: calc(100svh - 64px); display: flex; align-items: center; padding: 24px 0; }
   .hero.is-pinned .hero__inner { width: 100%; }
-  .hero.is-pinned h1 { margin-top: 18px; font-size: clamp(42px, 6vw, 72px); }
-  .hero.is-pinned .hero__ctas, .hero.is-pinned .hero__meta { margin-top: 20px; }
-  .hero.is-pinned .hero__art { max-width: min(480px, calc((100vh - 64px - 140px) * 1.04)); }
+  /* the 8 takes what height is left under the logos and title */
+  .hero.is-pinned .hero__art { max-width: min(560px, calc((100vh - 360px) * 1.3)); }
 }
 @media (prefers-reduced-motion: reduce) {
   .balance__svg, .balance__ring, .balance__label, .balance__solution { animation: none; }
   .balance__crisp { animation: none; }
   .balance__goo, .balance__spark { display: none; }
+  .balance__glow { animation: none; opacity: .3; }
 }
 
 /* Lockup */
@@ -205,6 +206,11 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .lockup__x { color: #9097B5; font-size: 22px; }
 .lockup__aura { display: inline-flex; align-items: center; gap: 8px; font-family: "Sora", var(--body); font-weight: 800; font-size: 20px; letter-spacing: -0.02em; color: #1E4D3B; }
 .lockup__aura b { color: #C77D12; font-weight: 800; }
+.lockup--large { gap: 12px 18px; }
+.lockup--large .lockup__g8, .lockup--large .lockup__x { font-size: 29px; }
+.lockup--large .lockup__aura { font-size: 26px; }
+.lockup--large .lockup__g8 { gap: 12px; }
+.lockup--large .lockup__aura { gap: 10px; }
 
 /* Sections */
 .section { padding: 72px 0; }
